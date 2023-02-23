@@ -20,3 +20,42 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
         inform(format_string, *bullscows(user_word, secret))
         if user_word == secret:
             return count
+
+
+def ask(prompt: str, valid: list[str] = None) -> str:
+    if valid:
+        while buff := input(prompt):
+            if buff in valid:
+                return buff
+            print("Not valid word, try again.")
+    return input(prompt)
+
+
+def inform(format_string: str, bulls: int, cows: int) -> None:
+    print(format_string.format(bulls, cows))
+
+
+def parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dictionary")
+    parser.add_argument("length", type=int, default=5)
+    return parser
+
+
+def main():
+    args = parser().parse_args()
+    url, length = args.dictionary, args.length
+
+    try:
+        urllib.request.urlretrieve(url, "dictionary")
+    except:
+        pass
+
+    with open("dictionary", "r") as file:
+        words = [word.strip() for word in file if len(word.strip()) == length]
+
+    print(gameplay(ask, inform, words))
+
+
+if __name__ == "__main__":
+    main()
