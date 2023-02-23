@@ -1,6 +1,7 @@
 import argparse
 import urllib
 from random import randint
+from cowsay import cowsay, list_cows
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -23,16 +24,21 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
 
 def ask(prompt: str, valid: list[str] = None) -> str:
+    prompt = cowsay(prompt, cow=list_cows()[randint(0, len(list_cows()))])
+    print(prompt)
     if valid:
-        while buff := input(prompt):
+        while buff := input():
             if buff in valid:
                 return buff
             print("Not valid word, try again.")
-    return input(prompt)
+    return input()
 
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
-    print(format_string.format(bulls, cows))
+    print(cowsay(
+        format_string.format(bulls, cows),
+        cow=list_cows()[randint(0, len(list_cows()))]
+    ))
 
 
 def parser():
@@ -45,7 +51,6 @@ def parser():
 def main():
     args = parser().parse_args()
     url, length = args.dictionary, args.length
-
     try:
         urllib.request.urlretrieve(url, "dictionary")
     except:
