@@ -1,7 +1,8 @@
 import argparse
 import urllib
 from random import randint
-from cowsay import cowsay, list_cows
+
+from my_cow import my_cow
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -24,7 +25,7 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
 
 def ask(prompt: str, valid: list[str] = None) -> str:
-    prompt = cowsay(prompt, cow=list_cows()[randint(0, len(list_cows()))])
+    prompt = my_cow.format(prompt)
     print(prompt)
     if valid:
         while buff := input():
@@ -35,10 +36,7 @@ def ask(prompt: str, valid: list[str] = None) -> str:
 
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
-    print(cowsay(
-        format_string.format(bulls, cows),
-        cow=list_cows()[randint(0, len(list_cows()))]
-    ))
+    print(my_cow.format(format_string.format(bulls, cows)))
 
 
 def parser():
