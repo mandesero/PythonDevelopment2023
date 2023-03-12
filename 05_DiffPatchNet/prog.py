@@ -34,6 +34,12 @@ async def cow_chat(reader, writer):
                     case ["login", login]:
                         if me not in clients:
                             if is_login_allow(login):
+                                if login in [clients[usr][0] for usr in clients]:
+                                    await conn_users[me].put(
+                                        f"::: Login {login} is already use."
+                                    )
+                                    break
+
                                 clients[me] = login, me
                                 await conn_users[me].put(
                                     f"::: Succsess login with {login}."
@@ -75,18 +81,22 @@ async def cow_chat(reader, writer):
                                         f"User with this name {login} does not exist."
                                     )
                                 else:
+                                    message = cs.cowsay(
+                                        message=text, cow=clients[me][0]
+                                    )
                                     for out in clients.values():
                                         if out[0] == login:
                                             await conn_users[out[1]].put(
-                                                f"Private message from {clients[me][0]}: {text}"
+                                                f"Private message from {clients[me][0]}:\n{message}"
                                             )
                                             break
 
                             case ["yield", text]:
+                                message = cs.cowsay(message=text, cow=clients[me][0])
                                 for out in clients.values():
                                     if conn_users[out[1]] is not conn_users[me]:
                                         await conn_users[out[1]].put(
-                                            f"{clients[me][0]}: {text}"
+                                            f"{clients[me][0]}:\n{message}"
                                         )
 
                             case ["quit"]:
@@ -98,12 +108,6 @@ async def cow_chat(reader, writer):
                                 writer.close()
                                 await writer.wait_closed()
                                 return
-
-                    #             await addr.send
-
-                # for out in conn_users.values():
-                #     if out is not conn_users[me]:
-                #         await out.put(f"{me} {q.result().decode().strip()}")
 
             elif q is receive:
                 receive = asyncio.create_task(conn_users[me].get())
